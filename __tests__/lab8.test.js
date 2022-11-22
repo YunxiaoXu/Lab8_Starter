@@ -135,7 +135,7 @@ describe('Basic user flow for Website', () => {
   // number in the top right of the screen is 0
   it('Checking number of items in cart on screen after removing from cart', async () => {
     console.log('Checking number of items in cart on screen...');
-    // TODO - Step 6
+    // Step 6
     // Go through and click "Remove from Cart" on every single <product-item>, just like above.
     // Once you have, check to make sure that #cart-count is now 0
     expect(
@@ -157,10 +157,30 @@ describe('Basic user flow for Website', () => {
   // after we refresh the page
   it('Checking number of items in cart on screen after reload', async () => {
     console.log('Checking number of items in cart on screen after reload...');
-    // TODO - Step 7
+    // Step 7
     // Reload the page once more, then go through each <product-item> to make sure that it has remembered nothing
     // is in the cart - do this by checking the text on the buttons so that they should say "Add to Cart".
+    await page.reload();
+    expect(
+      await page.$$('product-item')
+        .then(async prodItems => {
+          let isCorrect = true;
+          for (const prodItem of prodItems) {
+            isCorrect &&= await prodItem.getProperty("shadowRoot")
+              .then(root => root.$("button"))
+              .then(button => button.getProperty("innerText"))
+              .then(text => text.jsonValue())
+              .then(plainValue => plainValue == "Add to Cart")
+          }
+          return isCorrect;
+        })
+    ).toBe(true);
     // Also check to make sure that #cart-count is still 0
+    expect(
+      await page.$('#cart-count')
+        .then(elem => elem.getProperty('innerText'))
+        .then(text => text.jsonValue())
+    ).toBe('0');
   }, 10000);
 
   // Checking to make sure that localStorage for the cart is as we'd expect for the

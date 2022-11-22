@@ -1,7 +1,7 @@
 describe('Basic user flow for Website', () => {
   // First, visit the lab 8 website
   beforeAll(async () => {
-    await page.goto('https://cse110-f2021.github.io/Lab8_Website');
+    await page.goto('https://yunxiaoxu.github.io/Lab8_Starter');
   });
 
   // Next, check to make sure that all 20 <product-item> elements have loaded
@@ -35,10 +35,20 @@ describe('Basic user flow for Website', () => {
     // Expect allArePopulated to still be true
     expect(allArePopulated).toBe(true);
 
-    // TODO - Step 1
+    // Step 1
     // Right now this function is only checking the first <product-item> it found, make it so that
     // it checks every <product-item> it found
 
+    for (const prodItem of prodItems) {
+      await prodItem.getProperty('data')
+        .then(data => data.jsonValue())
+        .then(plainValue =>
+          expect(
+            plainValue.title.length != 0
+            && plainValue.price.length != 0
+            && plainValue.image.length != 0
+          ).toBe(true));
+    }
   }, 10000);
 
   // Check to make sure that when you click "Add to Cart" on the first <product-item> that

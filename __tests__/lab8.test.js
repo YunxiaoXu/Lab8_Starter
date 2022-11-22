@@ -40,14 +40,14 @@ describe('Basic user flow for Website', () => {
     // it checks every <product-item> it found
 
     for (const prodItem of prodItems) {
-      await prodItem.getProperty('data')
-        .then(data => data.jsonValue())
-        .then(plainValue =>
-          expect(
+      expect(
+        await prodItem.getProperty('data')
+          .then(data => data.jsonValue())
+          .then(plainValue =>
             plainValue.title.length != 0
             && plainValue.price.length != 0
-            && plainValue.image.length != 0
-          ).toBe(true));
+            && plainValue.image.length != 0)
+      ).toBe(true);
     }
   }, 10000);
 
@@ -55,11 +55,17 @@ describe('Basic user flow for Website', () => {
   // the button swaps to "Remove from Cart"
   it('Clicking the "Add to Cart" button should change button text', async () => {
     console.log('Checking the "Add to Cart" button...');
-    // TODO - Step 2
+    // Step 2
     // Query a <product-item> element using puppeteer ( checkout page.$() and page.$$() in the docs )
+    const prodItem = await page.$('product-item');
     // Grab the shadowRoot of that element (it's a property), then query a button from that shadowRoot.
+    const button = await prodItem.getProperty('shadowRoot').then(root => root.$('button'));
     // Once you have the button, you can click it and check the innerText property of the button.
+    await button.click();
+    let innerText = await button.getProperty('innerText');
     // Once you have the innerText property, use innerText.jsonValue() to get the text value of it
+    let plainValue = await innerText.jsonValue();
+    expect(plainValue).toBe("Remove from Cart");
   }, 2500);
 
   // Check to make sure that after clicking "Add to Cart" on every <product-item> that the Cart
